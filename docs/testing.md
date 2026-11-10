@@ -7,10 +7,11 @@ npm run lint             # ESLint: Next rules, canonical Tailwind classes
 npm run typecheck        # next typegen && tsc (typed routes included)
 npm test                 # Vitest, tests/unit/
 npm run build            # also renders cards and hashes the CSP; fails on a missing content block or card
+npm run cards:verify     # every built card is a complete 1200x630 PNG under 600 KB with visible content
 npm run test:links       # serves out/ on :4173, crawls it, fails on a broken internal link or #anchor
 npm run test:e2e         # Playwright against out/ (build first)
 npm run test:lighthouse  # Lighthouse CI against out/; accessibility < 0.95 fails
-npm run check            # lint + typecheck + unit + build + links
+npm run check            # lint + typecheck + unit + build + cards:verify + links
 ```
 
 CI (`.github/workflows/ci.yml`) runs all of them on every push to `main` and every pull request, and uploads the Playwright and Lighthouse reports.
@@ -30,6 +31,7 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 | `site.test.ts` | a nav item is not an exported route, a route has a trailing slash or no card, a card title is over 56 characters |
 | `hardcoded.test.ts` | the repo slug appears outside `lib/site.ts`; `package.json`'s repository disagrees; copy uses an em dash or an empty marketing word |
 | `headers.test.ts` | `_headers` loses a security header; `wrangler.jsonc` or `netlify.toml` stops matching the export |
+| `cards.test.ts` | a social card fails to render, trips a render guard, or breaks a platform's documented rules (format, size, WhatsApp's 600 KB, alt text); see [social-cards.md](social-cards.md) |
 | `csp.test.ts` | the CSP step hashes the wrong scripts or allows `'unsafe-inline'` |
 | `brand.test.ts` | `src/app/icon.svg` stops matching the mark's geometry or colours |
 | `service-worker.test.ts` | the service worker generator maps URLs wrongly, precaches the wrong files, leaves a placeholder, or the self-removing worker breaks |
@@ -52,7 +54,7 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 - **`content.md for route "x" has no @y block`**: the page asks for a block the file does not have. Add it, or fix the name.
 - **Type error on `CARDS`**: a route in `EXPORTED_ROUTES` has no card.
 - **Type error on a `<Link href>`**: the route does not exist (typed routes). Check the path, without a trailing slash.
-- **Metaplate `overflow`**: a card's title or description is too long.
+- **`RenderGuardError`** from Metaplate during `npm run assets`: a social card is broken. The message names the guard (`overflow`, `safeArea`, `textOverlap`, `missingGlyphs`, `blank`) and the element; [social-cards.md](social-cards.md#render-guards) has the fix for each.
 - **`--x clears AA` fails**: the new colour is too close to a surface; the message gives the ratio.
 - **`CSP violation: script-src ...`**: a script was injected after build or comes from another origin; see [security.md](security.md).
 - **`404 .../__next.*.txt`** in the console test: Next changed its prefetch file naming in a static export. See `scripts/flatten-rsc-segments.mjs`.

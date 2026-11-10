@@ -42,7 +42,7 @@ Self-hosted from `@fontsource` through `next/font/local` in `src/app/layout.tsx`
 1. `npm install @fontsource/<family>` and remove the old package.
 2. Update the `localFont` `src` paths in `layout.tsx` (list only the weights the pages use; each is preloaded).
 3. Update `FAMILIES` in `scripts/copy-font-licences.mjs` and the font list in `tests/e2e/console.spec.ts`.
-4. Update `fontsourceFontLoader` and `fontFamily` names in `src/lib/og/plate.tsx`.
+4. Update `fontsourceFontLoader` and `fontFamily` names in `src/lib/og/plate.tsx` ([social-cards.md](social-cards.md)), and check the cards with `npm run cards:baseline` before and `npm run cards:compare` after.
 
 Never load fonts from Google Fonts or another origin: the CSP blocks it and `console.spec.ts` fails on any third-party request.
 

@@ -55,9 +55,22 @@ export const og = createNodeOg<CardCopy>({
     { font: "inter", weight: 400 },
     { font: "jetbrains-mono", weight: 500 },
   ]),
-  // A card with text off the canvas, no font for a glyph, or nothing on it
-  // fails the build instead of shipping.
-  guards: { missingGlyphs: "error", overflow: "error", blank: "error" },
+  /*
+   * Render guards: a card that breaks one of these fails `npm run assets`, and so the build,
+   * instead of shipping. docs/social-cards.md explains each.
+   * - missingGlyphs: a character no loaded font covers (it would draw as a box or nothing)
+   * - overflow: text laid out past the canvas edge
+   * - safeArea: text in the strip that X's 2:1 or Open Graph's 1.91:1 crop cuts off
+   * - textOverlap: two text boxes that intersect (a long title running into the description)
+   * - blank: every pixel the same colour (the text never rendered)
+   */
+  guards: {
+    missingGlyphs: "error",
+    overflow: "error",
+    safeArea: "error",
+    textOverlap: "error",
+    blank: "error",
+  },
   component: (copy) => (
     <div
       style={{

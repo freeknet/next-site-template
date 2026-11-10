@@ -71,7 +71,16 @@ Dark is the default. Light applies when the system asks for it, and an explicit 
 
 ## Social cards
 
-`npm run assets` runs before `dev` and `build` and renders one 1200 by 630 PNG per route into `public/`, from the copy in `src/lib/og/cards.ts` and the layout in `src/lib/og/plate.tsx`. The render fails if a card's text overflows, if a glyph has no font, or if the card is blank. Each page's metadata points at its card through `pageMetadata()`, which also restates the Open Graph fields Next would otherwise drop when a page sets its own.
+The preview image a link shows in Slack, Discord, X or LinkedIn is rendered at build time by [Metaplate](https://github.com/freeknet/metaplate). `npm run assets` runs before `dev` and `build` and writes one 1200 by 630 PNG per route into `public/`, from the copy in `src/lib/og/cards.ts` and the layout in `src/lib/og/plate.tsx`. The same plate builds each page's `og:image` tags, so the file and the metadata cannot disagree.
+
+Metaplate's render guards fail the build for a card that would ship broken: text past the edge, text in the strip a platform crops, two lines of text overlapping, a character no font covers, or a blank image. A unit test checks each card against what every major platform documents, including WhatsApp's 600 KB limit.
+
+| Command | Use it to |
+| --- | --- |
+| `npm run cards:preview` | design a card in a live gallery that reloads on save |
+| `npm run cards:verify` | check the built cards are complete PNGs with visible content |
+| `npm run cards:baseline`, `npm run cards:compare` | catch any pixel change around a Metaplate, Satori or font upgrade |
+| `npm run cards:verify-live -- https://your-domain/` | check the live site's previews as the crawlers see them |
 
 A changed card gets a new `?v=` token in its URL, so crawlers fetch it again. Raise `revision` in the plate when you change the layout without changing any copy.
 
@@ -115,4 +124,4 @@ For Netlify, link the repository and it will build with `netlify.toml`. Any othe
 
 ## Keeping it current
 
-Dependabot opens one grouped pull request a week for minor and patch updates, and keeps `next` and `eslint-config-next` together because their versions must match. New releases wait a few days before they are proposed. `DEPENDENCIES.md` records why each package is there; update it in the same change as the package.
+Dependabot opens one grouped pull request a week for minor and patch updates, and keeps `next` and `eslint-config-next` together because their versions must match. New releases wait a few days before they are proposed. `docs/dependencies.md` records why each package is there; update it in the same change as the package.

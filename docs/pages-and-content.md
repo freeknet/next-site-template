@@ -8,7 +8,7 @@ Do every step; the type checker and tests enforce most of them.
 2. **Register it** in `src/lib/site.ts`:
    - add `"/<route>"` to `EXPORTED_ROUTES` (no trailing slash);
    - if it belongs in the header, add a `NAV` item (`href`, `label`, `blurb`, `icon`). A new icon needs a drawing in `src/components/brand/icons.tsx`, a name in `IconName`, and an entry in `NAV_ICONS`.
-3. **Add its social card** to `CARDS` in `src/lib/og/cards.ts`. Without one, the build fails with a type error. Keep the title to 56 characters or fewer (`tests/unit/site.test.ts`).
+3. **Add its social card** to `CARDS` in `src/lib/og/cards.ts`. Without one, the build fails with a type error. Keep the title to 56 characters or fewer (`tests/unit/site.test.ts`); [social-cards.md](social-cards.md) covers the rest.
 4. **Set metadata** in the page with `pageMetadata("/<route>", { title, description })`. The description must be over 50 characters.
 5. **Add it to the tests:** a row in `tests/e2e/routes.ts` (the `heading` regex must match the page's single `h1`) and a URL in `lighthouserc.json` (`http://localhost/<route>/index.html`).
 6. Run `npm run check && npm run test:e2e`.

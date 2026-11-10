@@ -18,6 +18,28 @@ A Next.js 16 App Router site exported to static files (`output: "export"`). Ther
 
 `npm run dev` runs `predev` (the same assets step) and then `next dev`. The postbuild steps do not run in dev, so there is no CSP and no service worker there.
 
+## npm scripts
+
+| Script | What it does |
+| --- | --- |
+| `dev` | `predev` (assets), then `next dev` on http://localhost:3000 |
+| `build` | `prebuild` (assets), `next build` into `out/`, then `postbuild` (prefetch fix, service worker, CSP) |
+| `start` | serves `out/` with `serve`, as a static host would |
+| `assets` | font licences, app icons, social cards into `public/` |
+| `init:site` | rewrites the project identity (`--name`, `--repo`, `--tagline`, `--description`, `--branch`) |
+| `lint` | ESLint |
+| `typecheck` | `next typegen` (route types), then `tsc --noEmit` |
+| `test`, `test:watch` | Vitest, `tests/unit/` |
+| `test:e2e`, `test:e2e:update` | Playwright against `out/` |
+| `test:links` | serves `out/` on :4173 and crawls it for broken links and anchors |
+| `test:lighthouse` | Lighthouse CI against `out/` |
+| `check` | lint, typecheck, test, build, cards:verify, test:links |
+| `cards:preview` | Metaplate's live card gallery on http://127.0.0.1:4323 |
+| `cards:verify` | checks every built card is a complete 1200x630 PNG under 600 KB with visible content |
+| `cards:baseline`, `cards:compare` | record the built cards, then fail on any pixel change and write diffs |
+| `cards:verify-live` | `-- https://site/`: checks a deployed page's social images as crawlers see them |
+| `deploy`, `deploy:preview` | build and deploy to Cloudflare (production, or a preview version) |
+
 ## Source layout
 
 ```text

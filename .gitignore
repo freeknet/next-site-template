@@ -34,6 +34,10 @@ next-env.d.ts
 /public/*/og-image.png
 /.og-manifest.json
 
+# Social card baselines and diffs (npm run cards:baseline / cards:compare): local review aids.
+/.og-baseline/
+/.og-diff/
+
 # OS / editors
 .DS_Store
 *.pem
