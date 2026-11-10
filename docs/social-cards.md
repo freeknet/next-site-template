@@ -85,7 +85,7 @@ While designing, run `npm run cards:preview` and open the URL it prints (`http:/
 | When | Command | What it checks |
 | --- | --- | --- |
 | Every build | `npm run assets` (automatic) | The guards above; each written file's format and size; and, through `--target`, every platform's documented rules (Open Graph, X, LinkedIn, Facebook, WhatsApp, Slack, Discord) with WhatsApp's 600 KB as the file-size ceiling. A card that breaks one fails the build. |
-| Every build | `scripts/audit-export.mts` (`postbuild`, automatic) | Every exported page names a card that is in `out/`, a route names its own card, and the bytes match the tags (size, type, alt) and every platform's rules. On a production build (an HTTPS `NEXT_PUBLIC_SITE_URL`) the image URLs are checked too; on a localhost build they are not. |
+| Every build | `scripts/audit-export.mts` (`postbuild`, automatic) | Every exported page names a card that is in `out/`; a route's page names its own card; `og:image:width`, `og:image:height` and `og:image:alt` are present; and the bytes match the tags and every platform's rules. On a production build (an HTTPS `NEXT_PUBLIC_SITE_URL`) the image URLs are checked too; on a localhost build `checkUrl: false` skips that one rule. |
 | Every `npm test` | `tests/unit/cards.test.ts` | Each card renders and meets the documented rules of Open Graph, X, LinkedIn, Facebook, WhatsApp, Slack and Discord (format, dimensions, file size, alt text). |
 | After a build | `npm run cards:verify` (part of `npm run check`) | Every `out/**/og-image.png` is a real, complete 1200x630 PNG under 600 KB with visible content. |
 | Browser tests | `tests/e2e/metadata.spec.ts` | Each page declares its card with width, height and alt, and the card is served as `image/png`. |
@@ -116,6 +116,7 @@ Look at the diff images. If the change is acceptable, run `npm run cards:baselin
 | `render failed: ... exceeding the 600000-byte limit` | A card is too large for WhatsApp. Usually a photograph in a PNG: switch the plate to JPEG output. |
 | `audit-export: ... is not in the export` | A page names a card that was not rendered: the route is missing from `EXPORTED_ROUTES`, or its path changed. |
 | `audit-export: ... expected its own card` | A page uses another route's metadata; give it `pageMetadata("<its route>", ...)`. |
+| `audit-export: ... must both be set` or `... require alt text` | A page's tags lost `og:image:width`/`height` or `og:image:alt`; it is setting `openGraph` by hand instead of through `pageMetadata()`. |
 | The card is in the wrong typeface, with no error | `fontFamily` must equal the family name exactly, and the weight must be in `fonts`. |
 | `Cannot load ...cards.render.tsx: Node does not transform JSX` | `metaplate` was run directly (`npx metaplate render ...`). Use the npm scripts, which run it under `tsx`. |
 | A shared link shows the old card | The platform cached the old URL. Changed copy gets a new `?v=`; raise `revision` when only the layout changed. Then re-scrape it in the platform's debugger. |

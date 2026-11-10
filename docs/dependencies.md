@@ -54,11 +54,11 @@ Produces the same heading slugs `rehype-slug` does, so the table of contents lin
 
 - **Where:** `src/lib/markdown-toc.ts`, `src/lib/page-content.ts`. `tests/unit/markdown-toc.test.ts` checks the slugs.
 
-### `metaplate` 0.8.3 (MIT)
+### `metaplate` 0.8.4 (MIT)
 
 freeknet's own social-image library. Renders a card per route before the build, builds each page's `og:image` metadata from the same definition, fails a broken card with render guards, and verifies files, baselines and deployed pages. See [social-cards.md](social-cards.md).
 
-- **Where:** `src/lib/og/`, `scripts/render-cards.mts` (render with `--target`, 0.8.3+), `scripts/audit-export.mts` (`extractPageSocialMetadata`, `verifySocialImage`), `scripts/preview-cards.mts`, `tests/unit/cards.test.ts`, the `cards:*` npm scripts.
+- **Where:** `src/lib/og/`, `scripts/render-cards.mts` (render with `--target`, 0.8.3+), `scripts/audit-export.mts` (`extractPageSocialMetadata`, `verifySocialImage` with `checkUrl`, 0.8.4+), `scripts/preview-cards.mts`, `tests/unit/cards.test.ts`, the `cards:*` npm scripts.
 - **Peer dependencies:** `satori` and `@resvg/resvg-js` (installed as devDependencies), `next >=16.3.2 <17`, `react`.
 - **Watch:** any upgrade of Metaplate, Satori, resvg or a font can move card pixels with no code change. Run `npm run cards:baseline` before and `npm run cards:compare` after, and read Metaplate's [upgrading guide](https://github.com/freeknet/metaplate/blob/main/docs/upgrading.md) and CHANGELOG.
 

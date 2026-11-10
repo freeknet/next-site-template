@@ -4,12 +4,14 @@
  * `metaplate render` proves the card files are good; it cannot prove a page points at them.
  * This reads each page's tags the way `metaplate verify-page` will after the deploy (Metaplate's
  * own parser), finds the file its og:image names in out/, and verifies the bytes against the
- * tags: dimensions, type, alt text, and each platform's rules. A route's page must name that
- * route's own card. Any failure fails the build. Adapted from Metaplate's testing guide.
+ * tags: width and height (both required), type, alt text (required), and each platform's rules.
+ * A page for a route in EXPORTED_ROUTES must name that route's own card, which catches a page
+ * that inherits another page's metadata. Other pages (the offline page) only need a valid card.
+ * Any failure fails the build. Adapted from Metaplate's testing guide.
  *
  * The URL rules (an absolute HTTPS URL) only run when the build's origin is HTTPS, i.e. a
  * production build with NEXT_PUBLIC_SITE_URL set. A local or CI build's URLs are
- * http://localhost, so there the descriptor's URL is left out and the bytes are checked alone.
+ * http://localhost, so there `checkUrl: false` checks the files and tags alone (Metaplate 0.8.4+).
  */
 
 import { readFile, readdir } from "node:fs/promises";
@@ -38,15 +40,17 @@ const failures: string[] = [];
 
 for (const page of pages) {
   const html = await readFile(path.join(OUT, page), "utf8");
-  const { openGraph } = extractPageSocialMetadata(html, new URL(page, `${SITE_URL}/`).href);
+  const documentUrl = new URL(page, `${SITE_URL}/`).href;
+  const { openGraph } = extractPageSocialMetadata(html, documentUrl);
   const [image] = openGraph.images;
   if (!image?.url) {
     failures.push(`${page}: no og:image`);
     continue;
   }
 
+  // Values come back as written, so resolve a relative URL against the page.
   // `?v=` is a cache-busting token on the URL; the file on disk does not carry it.
-  const cardPath = new URL(image.url).pathname;
+  const cardPath = new URL(image.url, documentUrl).pathname;
   const expected = EXPECTED.get(page);
   if (expected && cardPath !== expected) failures.push(`${page}: names ${cardPath}, expected its own card ${expected}`);
 
@@ -57,16 +61,18 @@ for (const page of pages) {
   }
 
   // Tag values are strings as written; the descriptor compares numbers.
+  const width = Number(image.width);
+  const height = Number(image.height);
+  if (!Number.isInteger(width) || !Number.isInteger(height)) {
+    failures.push(`${page}: og:image:width and og:image:height must both be set`);
+    continue;
+  }
+
+  // A missing alt is passed as "" so the targets' alt-text rule fails it.
   const report = verifySocialImage(
     bytes,
-    {
-      ...(CHECK_URLS ? { url: image.url } : {}),
-      ...(image.alt ? { alt: image.alt } : {}),
-      ...(image.type ? { type: image.type } : {}),
-      width: Number(image.width),
-      height: Number(image.height),
-    },
-    { targets: TARGETS },
+    { url: image.url, alt: image.alt ?? "", ...(image.type ? { type: image.type } : {}), width, height },
+    { targets: TARGETS, checkUrl: CHECK_URLS },
   );
   for (const issue of report.issues) {
     if (issue.severity === "error") failures.push(`${page}: ${issue.target ?? ""} ${issue.message}`);
