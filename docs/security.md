@@ -33,6 +33,10 @@ Example, Google Analytics 4: `script-src https://www.googletagmanager.com`, `con
 - `style-src` allows `'unsafe-inline'` because React writes `style` attributes.
 - Redirects go in `public/_redirects`, not `next.config` (unsupported in a static export).
 
+## The service worker
+
+`/sw.js` is a same-origin file, so `script-src 'self'` allows it (`worker-src` falls back to `script-src`). It is served with `Cache-Control: no-cache, no-store, must-revalidate` so a new build always reaches visitors. It ignores other origins entirely, so the CSP alone governs third-party requests. See [pwa.md](pwa.md).
+
 ## Cache headers
 
 `/_next/static/*` is cached for a year as immutable (its file names are content hashes). Fonts and social cards, which keep their names, are fresh for a day and served stale for a week while revalidating. Add a rule in `_headers` for any other unhashed asset folder you add.

@@ -57,8 +57,21 @@ export const SITE_URL = (
   "http://localhost:4173"
 ).replace(/\/$/, "");
 
-/** Prefix for anything kept in the visitor's browser storage. */
+/** Prefix for anything kept in the visitor's browser storage, and the service worker's caches. */
 export const STORAGE_PREFIX = "next-site-template";
+
+/** The installed app's name under its icon: 12 characters or fewer, or it is cut off. */
+export const SHORT_NAME = "Site";
+
+/**
+ * Whether the site is a Progressive Web App: installable, with a service worker that keeps the
+ * pages readable offline (docs/pwa.md).
+ *
+ * Set to false to turn it off. The build then publishes a service worker that removes itself
+ * and its caches from every browser that installed the old one, so switching off is safe.
+ * scripts/build-sw.mjs reads this line, so keep it a literal `true` or `false`.
+ */
+export const PWA = true;
 
 /* ------------------------------------------------------------ navigation -- */
 

@@ -38,4 +38,4 @@ Serve `out/` as files. The host must resolve `/guide/` to `/guide/index.html`, r
 1. Attach the production domain.
 2. Set `INDEXABLE = true` in `src/lib/site.ts` and update the noindex test in `tests/e2e/metadata.spec.ts`.
 3. Deploy with `NEXT_PUBLIC_SITE_URL` set to the production origin.
-4. Check the live site: a page's canonical link and `og:image` use the production origin; `/robots.txt` allows indexing and names the sitemap; a link preview (paste a URL into a chat app) shows the card.
+4. Check the live site: Chrome's address bar offers to install it (or DevTools → Application → Manifest shows no errors); a page's canonical link and `og:image` use the production origin; `/robots.txt` allows indexing and names the sitemap; a link preview (paste a URL into a chat app) shows the card.

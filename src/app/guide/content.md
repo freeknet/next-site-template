@@ -26,16 +26,16 @@ npm run init:site -- --name "My Site" --repo me/my-site --tagline "What it does 
 
 | Path | What it holds |
 | --- | --- |
-| `src/lib/site.ts` | Name, repository, tagline, description, navigation, routes, the noindex switch |
+| `src/lib/site.ts` | Name, repository, tagline, description, navigation, routes, the noindex and PWA switches |
 | `src/app/globals.css` | The palette as role tokens, in both themes |
 | `src/app/<route>/content.md` | A page's words, in named blocks |
 | `src/lib/og/cards.ts` | Each route's social card copy |
 | `src/lib/og/plate.tsx` | The social card's layout |
 | `src/components/` | Header, footer, markdown, layout pieces |
 | `public/_headers` | Security and cache headers, for Cloudflare and Netlify |
-| `scripts/` | Build steps: cards, font licences, prefetch fix, CSP hashes, deploy |
-| `tests/unit/` | Vitest: palette, content parsing, headers, hard-coded values |
-| `tests/e2e/` | Playwright: accessibility, navigation, theme, metadata, console |
+| `scripts/` | Build steps: cards, icons, font licences, prefetch fix, service worker, CSP hashes, deploy |
+| `tests/unit/` | Vitest: palette, content parsing, headers, CSP, service worker, hard-coded values |
+| `tests/e2e/` | Playwright: accessibility, navigation, theme, metadata, PWA, console |
 
 ## Writing a page
 
@@ -80,6 +80,12 @@ A changed card gets a new `?v=` token in its URL, so crawlers fetch it again. Ra
 `public/_headers` sets the usual headers for every response: `nosniff`, a referrer policy, HSTS, a permissions policy and `frame-ancestors 'none'`. Both Cloudflare and Netlify read it.
 
 A static export cannot use nonces, and Next inlines its bootstrap scripts, so most static sites fall back to `script-src 'unsafe-inline'`. After each build `scripts/csp-hashes.mjs` hashes every page's inline scripts and writes a `<meta>` policy that allows exactly those. The browser enforces both policies, so the stricter one decides. To load something from another origin, add it to the policy in that script and to `_headers`.
+
+## Installing and offline
+
+The site is a Progressive Web App: browsers offer to install it, and a service worker keeps pages readable offline. The worker is generated after each build from the files actually exported, fetches pages from the network first so a deploy is visible at once, and serves the cached copy only when there is no connection. The icons are rendered from the mark.
+
+Set `PWA` in `src/lib/site.ts` to `false` to turn it off. The next build publishes a worker that removes itself from every browser that installed the old one, which is why the worker file is never simply deleted.
 
 ## Search engines
 

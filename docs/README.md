@@ -11,6 +11,7 @@ Start with [`../AGENTS.md`](../AGENTS.md) for the rules. Then read the doc for t
 | Change colours, fonts, the mark; add components | [styling-and-theme.md](styling-and-theme.md) |
 | Titles, descriptions, social cards, sitemap, robots, JSON-LD | [metadata-and-social-cards.md](metadata-and-social-cards.md) |
 | Add analytics or any third-party script; headers; CSP | [security.md](security.md) |
+| Installability, offline support, the service worker, app icons | [pwa.md](pwa.md) |
 | Run the checks, read a failure, add a test | [testing.md](testing.md) |
 | Deploy, attach a domain, go live | [deploying.md](deploying.md) |
 

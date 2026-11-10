@@ -8,13 +8,15 @@ A Next.js 16 App Router site exported to static files (`output: "export"`). Ther
 
 1. **`prebuild` → `npm run assets`**
    - `scripts/copy-font-licences.mjs`: copies the three OFL licences to `public/fonts/`.
+   - `scripts/render-icons.mts` (via `tsx`): renders the app icons from the mark into `public/icons/`.
    - `scripts/render-cards.mts` (via `tsx`): Metaplate renders one 1200x630 PNG per route into `public/<route>/og-image.png`. Fails on text overflow, a missing glyph or a blank card.
 2. **`next build`**: type-checks, prerenders every route into `out/` (`trailingSlash: true`, so `/guide` becomes `out/guide/index.html`), copies `public/` (including `_headers`) into `out/`.
 3. **`postbuild`**
    - `scripts/flatten-rsc-segments.mjs`: copies nested prefetch files to the dotted names the router requests (vercel/next.js#85374). Currently a no-op with `trailingSlash`, kept as a guard.
+   - `scripts/build-sw.mjs`: writes `out/sw.js` from `scripts/sw-template.js` with the list of files to precache, or a self-removing worker when `PWA` is off ([pwa.md](pwa.md)).
    - `scripts/csp-hashes.mjs`: hashes every page's inline `<script>`s and writes a `<meta http-equiv="Content-Security-Policy">` first in each `<head>`.
 
-`npm run dev` runs `predev` (the same assets step) and then `next dev`. The CSP step does not run in dev.
+`npm run dev` runs `predev` (the same assets step) and then `next dev`. The postbuild steps do not run in dev, so there is no CSP and no service worker there.
 
 ## Source layout
 
@@ -28,13 +30,14 @@ src/
     <route>/page.tsx      one folder per route
     <route>/content.md    that route's words
     not-found.tsx         404 page (exported as out/404.html)
+    offline/              what the service worker shows for an uncached page offline
     robots.ts sitemap.ts manifest.ts llms.txt/route.ts   static metadata routes
     icon.svg              favicon (copy of the mark; tests/unit/brand.test.ts keeps them in step)
   components/             header, footer, nav, markdown, layout pieces
     brand/                Mark, Wordmark, icons
     ui.tsx                Prose, Lede, Panel, Callout, MarkedList, GridFill, Action, ArrowLink
   lib/
-    site.ts               identity, nav, routes, INDEXABLE, SITE_URL  <- single source of truth
+    site.ts               identity, nav, routes, INDEXABLE, PWA, SITE_URL  <- single source of truth
     constants.ts          hex palette for Satori, layout constants
     page-content.ts       content.md parser
     markdown-toc.ts       headings -> table of contents
@@ -60,4 +63,4 @@ netlify.toml              Netlify alternative
 
 ## Server and client components
 
-Pages and most components are server components: they read `content.md` at build time with `node:fs`. Only interactive pieces carry `"use client"`: `NavLinks`, `MobileMenu`, `ThemeToggle`, `TableOfContents`, `Reveal`. Do not import a value from a `"use client"` module into server code (you get a client reference, not the value); shared constants go in a plain module, as `lib/theme.ts` does.
+Pages and most components are server components: they read `content.md` at build time with `node:fs`. Only interactive pieces carry `"use client"`: `NavLinks`, `MobileMenu`, `ThemeToggle`, `TableOfContents`, `Reveal`, `ServiceWorker`. Do not import a value from a `"use client"` module into server code (you get a client reference, not the value); shared constants go in a plain module, as `lib/theme.ts` does.

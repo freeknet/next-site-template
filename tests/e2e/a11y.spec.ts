@@ -57,3 +57,15 @@ test("the skip link reaches the main landmark", async ({ page }) => {
   await skip.click();
   await expect(page.locator("#main-content")).toBeFocused();
 });
+
+test("the offline and 404 pages have no detectable accessibility violations", async ({ page }) => {
+  for (const path of ["/offline/", "/no-such-page/"]) {
+    await page.goto(path);
+    await preparePage(page);
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    expect(results.violations.map((violation) => `${path}: ${violation.id}`)).toEqual([]);
+    await expect(page.locator("h1")).toHaveCount(1);
+  }
+});

@@ -16,6 +16,8 @@ export const BRAND = {
   label: "#8A9288",
   text: "#E8EAE6",
   accent: "#B8F84A",
+  /** The light theme's ground, for the browser's theme colour. */
+  groundLight: "#F6F7F4",
 } as const;
 
 /** The gradient's stops. */

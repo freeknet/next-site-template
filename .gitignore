@@ -29,6 +29,7 @@ next-env.d.ts
 
 # Written before every dev and build (npm run assets).
 /public/fonts/
+/public/icons/
 /public/og-image.png
 /public/*/og-image.png
 /.og-manifest.json

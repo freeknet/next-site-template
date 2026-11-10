@@ -2,7 +2,7 @@
 
 A statically exported Next.js 16 site (App Router, Tailwind v4), deployed as Cloudflare Workers static assets.
 
-**Read [`docs/README.md`](docs/README.md) before changing anything.** It indexes task-focused references: architecture, pages and content, styling and theme, metadata and social cards, security and CSP, testing, deploying. Claude Code skills for adding a page and rebranding are in `.claude/skills/`. This file is the short version.
+**Read [`docs/README.md`](docs/README.md) before changing anything.** It indexes task-focused references: architecture, pages and content, styling and theme, metadata and social cards, security and CSP, PWA, testing, deploying. Claude Code skills for adding a page and rebranding are in `.claude/skills/`. This file is the short version.
 
 ## Commands
 
@@ -24,6 +24,7 @@ A statically exported Next.js 16 site (App Router, Tailwind v4), deployed as Clo
 - A third-party origin (analytics, embeds) must be added to both `scripts/csp-hashes.mjs` and `public/_headers`, or it is blocked.
 - Copy rules (tested): no em dashes in reader-facing text, none of the empty marketing words listed in `tests/unit/hardcoded.test.ts`.
 - `INDEXABLE` in `src/lib/site.ts` stays `false` until launch.
+- The site is a PWA (`PWA` in `src/lib/site.ts`; `docs/pwa.md`). Change caching in `scripts/sw-template.js`, never in `out/sw.js`. To turn PWA off, set the flag to `false` and deploy; never delete `sw.js` or the registration, or visitors stay on the old cached build.
 - Keep `prefers-reduced-motion` honoured and focus styles visible. Every page has exactly one `h1`.
 - Update `DEPENDENCIES.md` in the same change as any dependency change past a minor.
 

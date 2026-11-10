@@ -3,9 +3,10 @@ import localFont from "next/font/local";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import JsonLd from "@/components/JsonLd";
+import ServiceWorker from "@/components/ServiceWorker";
 import { pageMetadata } from "@/lib/og/metadata";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
-import { DESCRIPTION, INDEXABLE, NAME, SITE_URL, TAGLINE } from "@/lib/site";
+import { DESCRIPTION, INDEXABLE, NAME, PWA, SHORT_NAME, SITE_URL, TAGLINE } from "@/lib/site";
 import { BRAND } from "@/lib/constants";
 import "./globals.css";
 
@@ -53,12 +54,24 @@ export const metadata: Metadata = {
   }),
   metadataBase: new URL(SITE_URL),
   applicationName: NAME,
+  // Stating `icons` replaces the link Next would add for app/icon.svg, so both are listed here.
+  // The apple-touch-icon is rendered by scripts/render-icons.mts.
+  icons: {
+    icon: { url: "/icon.svg", type: "image/svg+xml" },
+    apple: { url: "/icons/apple-touch-icon.png", sizes: "180x180" },
+  },
+  // iOS reads these rather than the manifest when the site is added to the home screen.
+  appleWebApp: PWA ? { capable: true, title: SHORT_NAME, statusBarStyle: "black-translucent" } : undefined,
   // Until launch, every page asks not to be indexed (see INDEXABLE in lib/site.ts).
   robots: INDEXABLE ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export const viewport: Viewport = {
-  themeColor: BRAND.ground,
+  // The browser chrome (and an installed app's title bar) follows the system theme.
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: BRAND.ground },
+    { media: "(prefers-color-scheme: light)", color: BRAND.groundLight },
+  ],
   colorScheme: "dark light",
 };
 
@@ -82,6 +95,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         </main>
         <SiteFooter />
         <JsonLd />
+        <ServiceWorker />
       </body>
     </html>
   );

@@ -37,8 +37,8 @@ These are what the pages are built from. The site is a static export, so nothing
 
 | Package | Version | Why | Where |
 | --- | --- | --- | --- |
-| `satori`, `@resvg/resvg-js` | 0.63.2, 2.6.2 | Metaplate's renderer and rasteriser (its peer dependencies). Kept out of the bundle by `serverExternalPackages`. | build only |
-| `tsx` | 4.23 | Runs the card render, whose plate is JSX that Node cannot load alone. | `npm run assets` |
+| `satori`, `@resvg/resvg-js` | 0.63.2, 2.6.2 | Metaplate's renderer and rasteriser (its peer dependencies), and resvg also renders the app icons. Kept out of the bundle by `serverExternalPackages`. | build only, `scripts/render-icons.mts` |
+| `tsx` | 4.23 | Runs the card and icon renders, which import TypeScript and JSX that Node cannot load alone. | `npm run assets` |
 | `tailwindcss`, `@tailwindcss/postcss` | 4.3.5 | Styling. Tokens in `src/app/globals.css`. | build |
 | `typescript` | 6.0.3 (`~`) | Types. Held on 6.0: TypeScript 7 (native) has no JavaScript API yet, which Next's build and typescript-eslint need. | `npm run typecheck` |
 | `@types/node`, `@types/react`, `@types/react-dom` | 26, 19, 19 | Types. | |

@@ -17,8 +17,19 @@
 /_next/static/*
   Cache-Control: public, max-age=31536000, immutable
 
+# The service worker must never be served from a cache, or a new build would not reach visitors
+# who installed an old one. Browsers also check it for updates on every navigation.
+/sw.js
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate
+
 # Files without a hash in their names: a day fresh, then a week served while the browser revalidates.
 /fonts/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/icons/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
 
 /og-image.png

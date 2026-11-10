@@ -124,4 +124,8 @@ describe("the table the social cards paint from", () => {
       expect(BRAND[brand].toLowerCase(), brand).toBe(DARK[token]);
     }
   });
+
+  it("agrees with the light theme's ground, used for the browser's theme colour", () => {
+    expect(BRAND.groundLight.toLowerCase()).toBe(LIGHT_EXPLICIT.ground);
+  });
 });

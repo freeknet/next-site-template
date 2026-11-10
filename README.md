@@ -27,6 +27,7 @@ npm run dev
 | **Fonts** | Inter, Space Grotesk and JetBrains Mono, self-hosted from `@fontsource`, licences published |
 | **Social cards** | [Metaplate](https://github.com/freeknet/metaplate) renders a 1200x630 PNG per route before every build; overflow fails the build |
 | **SEO** | Per-page metadata and canonical URLs, sitemap, robots, web app manifest, JSON-LD, `llms.txt`, and a noindex switch for staging |
+| **PWA** | Installable (manifest, maskable and Apple icons rendered from the mark), offline via a generated service worker with network-first pages, an offline page, and a switch that cleanly uninstalls it |
 | **Security** | Headers in `public/_headers`; after the build every page gets a CSP that allows only its own inline scripts, by hash |
 | **Tests** | Vitest (palette contrast, content parser, CSP, headers, hard-coded values), Playwright + axe (both themes, keyboard, metadata, console, 404s), linkinator, Lighthouse |
 | **CI** | GitHub Actions running all of the above on every pull request; Dependabot grouped weekly with a cooldown |
@@ -34,7 +35,7 @@ npm run dev
 
 ## For agents
 
-[`AGENTS.md`](AGENTS.md) has the rules (Claude Code reads it through `CLAUDE.md`), and [`docs/`](docs/README.md) has a task-focused reference for each part: architecture, pages and content, styling and theme, metadata and social cards, security and CSP, testing, deploying. Those docs describe the template's machinery, so they stay valid in every site made from it. Claude Code skills for adding a page and rebranding are in [`.claude/skills/`](.claude/skills/). The built site also serves `/llms.txt`, a plain-text map of its pages.
+[`AGENTS.md`](AGENTS.md) has the rules (Claude Code reads it through `CLAUDE.md`), and [`docs/`](docs/README.md) has a task-focused reference for each part: architecture, pages and content, styling and theme, metadata and social cards, security and CSP, PWA, testing, deploying. Those docs describe the template's machinery, so they stay valid in every site made from it. Claude Code skills for adding a page and rebranding are in [`.claude/skills/`](.claude/skills/). The built site also serves `/llms.txt`, a plain-text map of its pages.
 
 ## Commands
 

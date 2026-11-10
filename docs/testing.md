@@ -32,6 +32,7 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 | `headers.test.ts` | `_headers` loses a security header; `wrangler.jsonc` or `netlify.toml` stops matching the export |
 | `csp.test.ts` | the CSP step hashes the wrong scripts or allows `'unsafe-inline'` |
 | `brand.test.ts` | `src/app/icon.svg` stops matching the mark's geometry or colours |
+| `service-worker.test.ts` | the service worker generator maps URLs wrongly, precaches the wrong files, leaves a placeholder, or the self-removing worker breaks |
 
 ### Browser (`tests/e2e/`, against `out/`)
 
@@ -41,6 +42,7 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 | `theme.spec.ts` | system preference and explicit choice in both directions; persistence; axe in the light theme |
 | `navigation.spec.ts` | current-section marking; every nav link; mobile menu focus trap, Escape, backdrop; no horizontal overflow at 390px; the guide's table of contents |
 | `metadata.spec.ts` | each card is a 1200x630 PNG; Open Graph, Twitter, title, description, canonical; noindex; JSON-LD; favicon; sitemap, manifest, llms.txt; the 404 page |
+| `pwa.spec.ts` | the manifest and icons meet installability; the worker installs and controls the page; offline, cached pages, slash-less URLs and the offline page are served; `sw.js` is complete |
 | `console.spec.ts` | no console error, exception, 4xx/5xx, CSP violation or third-party request on load and after prefetching every link; client navigation under the CSP; self-hosted fonts and their licences |
 
 `tests/e2e/routes.ts` lists the routes the browser tests visit. Add a row for every page.
@@ -54,6 +56,8 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 - **`--x clears AA` fails**: the new colour is too close to a surface; the message gives the ratio.
 - **`CSP violation: script-src ...`**: a script was injected after build or comes from another origin; see [security.md](security.md).
 - **`404 .../__next.*.txt`** in the console test: Next changed its prefetch file naming in a static export. See `scripts/flatten-rsc-segments.mjs`.
+- **A test passes locally and fails in CI with "port already used"**: something left a server on 4173. Locally Playwright reuses it silently; in CI it refuses. Make sure any script that starts a server stops it.
+- **Offline test fails after changing the worker**: open DevTools → Application → Service workers on the built site; see [pwa.md](pwa.md).
 - **`overflows by Npx`**: something is wider than a phone. Usually a grid or flex child without `min-w-0`, or a long unbroken string.
 
 ## Adding tests
