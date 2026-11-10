@@ -35,8 +35,8 @@ export const CARDS: Record<ExportedRoute, CardCopy> = {
   },
   "/about": {
     eyebrow: "About",
-    title: "Four sites, one shape.",
-    description: "The conventions four production sites arrived at, gathered once.",
+    title: "What the template is for.",
+    description: "Static sites with their checks in place, and where it stops.",
     alt: "About the Next Site Template.",
   },
 };

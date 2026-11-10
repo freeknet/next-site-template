@@ -1,14 +1,12 @@
 <!-- @lede -->
 
-Four production sites, built over a few months, kept arriving at the same shape. This template is that shape, with the parts specific to any one project taken out.
+A starting point for a statically exported site that already has its checks in place, so a new project begins with the decisions made and the tests written.
 
 <!-- @body -->
 
-## Where it comes from
+## What it is for
 
-The structure, components and test suite started on the [Cinnabar](https://github.com/bonzupii/cinnabar/tree/main/site) site and were carried into [Strobe](https://github.com/lnorton89/strobe/tree/master/site)'s. The [golc](https://github.com/lnorton89/golc-site) site and JaJa PDX's site added the rest: a single configuration module, a noindex switch for staging, the Cloudflare deploy and the fix for prefetch requests that 404 in a static export.
-
-What they share is what is here:
+Marketing sites, project sites and documentation: pages that are known at build time and served as files. What comes with it:
 
 - a static export, so any host can serve the site and nothing runs on a server
 - colours as role tokens, with their contrast checked by a test rather than by eye

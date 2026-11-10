@@ -2,8 +2,6 @@
 
 A statically exported Next.js 16 site that starts finished: a palette checked for contrast in light and dark, pages whose words live in markdown, social cards rendered at build time, a hash-based content security policy, and lint, unit, browser, link and Lighthouse checks wired into CI. It deploys to Cloudflare Workers static assets, or to Netlify, or to any static host.
 
-It gathers the conventions the [Strobe](https://github.com/lnorton89/strobe/tree/master/site), [Cinnabar](https://github.com/bonzupii/cinnabar/tree/main/site), [golc](https://github.com/lnorton89/golc-site) and JaJa PDX sites arrived at, with the project-specific parts removed.
-
 ## Start a site
 
 Press **Use this template** on GitHub, or:
@@ -53,8 +51,8 @@ The browser tests can use a Chromium already on the machine: set `PLAYWRIGHT_CHR
 
 Lighthouse's SEO score sits below 0.9 until launch, because every page is `noindex` while `INDEXABLE` is `false`. That assertion is a warning; accessibility below 0.95 is an error.
 
-## Credits
+## License
 
-The site's structure, components and test suite are adapted from the [Cinnabar site](https://github.com/bonzupii/cinnabar/tree/main/site), Copyright 2026 Micah Ostrow, by way of the Strobe site, used under the Apache License 2.0 ([`LICENSE-APACHE`](LICENSE-APACHE)). They have been modified: re-themed, made configuration-driven, with the project-specific pages and features removed. Everything else is MIT ([`LICENSE`](LICENSE)).
+MIT ([`LICENSE`](LICENSE)).
 
 The fonts are under the SIL Open Font License 1.1: [Inter](https://github.com/rsms/inter), [Space Grotesk](https://github.com/floriankarsten/space-grotesk) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono). Their licences are published with each build at `/fonts/`.

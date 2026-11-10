@@ -6,6 +6,8 @@
 // Links to other origins are skipped: their availability is not this build's to fail on.
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
+import { createRequire } from "node:module";
+import path from "node:path";
 import { LinkChecker } from "linkinator";
 
 const PORT = process.env.PLAYWRIGHT_PORT ?? "4173";
@@ -16,10 +18,18 @@ if (!existsSync("out")) {
   process.exit(1);
 }
 
-const server = spawn("npx", ["serve", "out", "-l", PORT, "--no-port-switching"], {
+/*
+ * serve's own entry point, run with this Node, so the child is the server itself. Through `npx`
+ * the child would be a wrapper: killing it left the real server holding the port, and the
+ * Playwright run after this in CI then refused to start.
+ */
+const require = createRequire(import.meta.url);
+const servePackage = require.resolve("serve/package.json");
+const serveBin = path.join(path.dirname(servePackage), require(servePackage).bin.serve);
+const server = spawn(process.execPath, [serveBin, "out", "-l", PORT, "--no-port-switching"], {
   stdio: "ignore",
-  shell: process.platform === "win32",
 });
+const exited = new Promise((resolve) => server.once("exit", resolve));
 
 async function waitForServer() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
@@ -49,5 +59,6 @@ try {
   console.log(`check-links: ${result.links.length} link(s) checked, ${broken.length} broken.`);
 } finally {
   server.kill();
+  await exited;
 }
 process.exit(broken.length === 0 ? 0 : 1);

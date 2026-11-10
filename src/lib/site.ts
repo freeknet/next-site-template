@@ -88,7 +88,7 @@ export const NAV: readonly NavItem[] = [
   {
     href: "/about",
     label: "About",
-    blurb: "Where the template comes from and what it is for.",
+    blurb: "What the template is for, and what it is not.",
     icon: "about",
   },
 ] as const;

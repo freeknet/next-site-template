@@ -7,7 +7,7 @@ import { readPageContent } from "@/lib/page-content";
 export const metadata = pageMetadata("/about", {
   title: "About",
   description:
-    "Where the template comes from: the conventions four production Next.js sites arrived at, gathered once with the project-specific parts removed.",
+    "What the template is for: statically exported marketing, project and documentation sites, with their checks in place from the first commit, and where it stops.",
 });
 
 export default async function About() {
@@ -17,7 +17,7 @@ export default async function About() {
       <PageHeader
         section="About"
         icon={AboutIcon}
-        title="Four sites, one shape."
+        title="What the template is for."
         lede={content.block("lede")}
       />
       <div className="mx-auto max-w-[1400px] px-6 pt-6 pb-24 sm:px-10">
