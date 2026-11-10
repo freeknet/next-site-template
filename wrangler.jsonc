@@ -1,0 +1,18 @@
+// Cloudflare Workers static assets: serves the static export in out/. No Worker script runs, so
+// every request is a free static-asset request. `npm run deploy` builds and deploys
+// (scripts/deploy-cloudflare.mjs). public/_headers is copied into out/ and applied by Cloudflare.
+{
+  "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
+  "name": "next-site-template",
+  "compatibility_date": "2026-11-10",
+  "assets": {
+    "directory": "./out",
+    // next.config.ts sets trailingSlash, so each route is a folder with an index.html.
+    "html_handling": "force-trailing-slash",
+    // Serves out/404.html, with a 404 status, for anything that does not exist.
+    "not_found_handling": "404-page"
+  }
+  // Attach a domain once DNS is on Cloudflare:
+  // "routes": [{ "pattern": "example.com", "custom_domain": true }],
+  // "workers_dev": true
+}

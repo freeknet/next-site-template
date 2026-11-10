@@ -1,0 +1,28 @@
+# Read by Cloudflare Workers static assets and by Netlify, which share this format.
+#
+# The Content-Security-Policy here is the baseline. Every page also carries a stricter policy in a
+# <meta> tag, written by scripts/csp-hashes.mjs, that allows only that page's own inline scripts by
+# hash. Browsers enforce both. This header adds what a <meta> policy cannot: frame-ancestors.
+# Add any third-party origin to both places.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Strict-Transport-Security: max-age=31536000
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Cross-Origin-Opener-Policy: same-origin
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'
+
+# Content-hashed build output: safe to cache for good.
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Files without a hash in their names: a day fresh, then a week served while the browser revalidates.
+/fonts/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/og-image.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+/*/og-image.png
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800

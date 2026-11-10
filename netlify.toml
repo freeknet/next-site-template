@@ -1,0 +1,11 @@
+# Netlify, as the alternative to Cloudflare (wrangler.jsonc). Headers live in public/_headers,
+# which both hosts read, so nothing is duplicated here.
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "26"
+  # Netlify auto-installs @netlify/plugin-nextjs for any Next project. That runtime exists to wire up
+  # a server, and its onPostBuild step fails a static export with "Failed publishing static content".
+  NETLIFY_NEXT_PLUGIN_SKIP = "true"

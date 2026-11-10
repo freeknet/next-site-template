@@ -1,0 +1,356 @@
+@import "tailwindcss";
+
+/*
+ * The palette.
+ *
+ * Token names are the roles a page paints with, not colour names: --ground is
+ * the page, --panel a cell on it, --hairline the 1px rules, --text, --bright,
+ * --secondary and --label the four steps of grey type, --accent the one
+ * saturated colour. Rebranding is changing the hex values below, in all four
+ * places they appear, and in lib/constants.ts for the social cards.
+ *
+ * The defaults are freeknet's: ink, paper grey and lime, with the org's
+ * project colours as the four-stop gradient.
+ *
+ * Dark is the default. Light comes from the system preference or an explicit
+ * choice, and moves the accent that carries text to a deep green, because
+ * lime on a light ground cannot carry text.
+ *
+ * tests/unit/palette.test.ts reads this file and pins every text/surface pair
+ * against WCAG AA in both themes. Change a value and it tells you whether the
+ * new one still reads.
+ */
+
+:root {
+  --ground: #0b0d0e;
+  --panel: #151819;
+  --panel-raised: #1c2022;
+  --hairline: #262b2d;
+  --hairline-strong: #363c3f;
+
+  --grey: #8a9288;
+  --secondary: #a3aba1;
+  --bright: #c9cec6;
+  --text: #e8eae6;
+  --label: #8a9288;
+
+  --accent: #b8f84a;
+  --accent-deep: #8fd11f;
+  --accent-text: #b8f84a;
+  --on-accent: #0b0d0e;
+
+  /* The gradient's four stops. Kept for the mark and a few thin rules. */
+  --stop-1: #b8f84a;
+  --stop-2: #6fd3ff;
+  --stop-3: #d7a6ff;
+  --stop-4: #ff8ac8;
+
+  color-scheme: dark;
+}
+
+/* Light, when the system asks for it and no explicit choice says otherwise. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground: #f6f7f4;
+    --panel: #eceee9;
+    --panel-raised: #e2e5de;
+    --hairline: #d3d7cf;
+    --hairline-strong: #b5bbb0;
+
+    --grey: #636a61;
+    --secondary: #3d433b;
+    --bright: #252a24;
+    --text: #0b0d0e;
+    --label: #535a51;
+
+    --accent: #3f6b00;
+    --accent-deep: #2f5200;
+    --accent-text: #3b6400;
+    --on-accent: #ffffff;
+
+    --stop-1: #b8f84a;
+    --stop-2: #6fd3ff;
+    --stop-3: #d7a6ff;
+    --stop-4: #ff8ac8;
+
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --ground: #f6f7f4;
+  --panel: #eceee9;
+  --panel-raised: #e2e5de;
+  --hairline: #d3d7cf;
+  --hairline-strong: #b5bbb0;
+
+  --grey: #636a61;
+  --secondary: #3d433b;
+  --bright: #252a24;
+  --text: #0b0d0e;
+  --label: #535a51;
+
+  --accent: #3f6b00;
+  --accent-deep: #2f5200;
+  --accent-text: #3b6400;
+  --on-accent: #ffffff;
+
+  --stop-1: #b8f84a;
+  --stop-2: #6fd3ff;
+  --stop-3: #d7a6ff;
+  --stop-4: #ff8ac8;
+
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --ground: #0b0d0e;
+  --panel: #151819;
+  --panel-raised: #1c2022;
+  --hairline: #262b2d;
+  --hairline-strong: #363c3f;
+
+  --grey: #8a9288;
+  --secondary: #a3aba1;
+  --bright: #c9cec6;
+  --text: #e8eae6;
+  --label: #8a9288;
+
+  --accent: #b8f84a;
+  --accent-deep: #8fd11f;
+  --accent-text: #b8f84a;
+  --on-accent: #0b0d0e;
+
+  --stop-1: #b8f84a;
+  --stop-2: #6fd3ff;
+  --stop-3: #d7a6ff;
+  --stop-4: #ff8ac8;
+
+  color-scheme: dark;
+}
+
+/*
+ * Code keeps one dark ground in both themes, so a shell transcript reads the
+ * same whichever theme the page is in, and every ratio below holds in both.
+ */
+:root,
+:root[data-theme="light"],
+:root[data-theme="dark"] {
+  --code-ground: #0b0d0e;
+  --code-text: #e8eae6;
+  --code-dim: #a3aba1;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-panel: var(--panel);
+  --color-panel-raised: var(--panel-raised);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-grey: var(--grey);
+  --color-secondary: var(--secondary);
+  --color-bright: var(--bright);
+  --color-text: var(--text);
+  --color-label: var(--label);
+
+  --color-accent: var(--accent);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-text: var(--accent-text);
+  --color-on-accent: var(--on-accent);
+
+  --color-stop-1: var(--stop-1);
+  --color-stop-2: var(--stop-2);
+  --color-stop-3: var(--stop-3);
+  --color-stop-4: var(--stop-4);
+
+  --color-code-ground: var(--code-ground);
+  --color-code-text: var(--code-text);
+  --color-code-dim: var(--code-dim);
+
+  /* Inter for body, Space Grotesk for headings, JetBrains Mono for code. */
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+html {
+  background: var(--ground);
+}
+
+body {
+  background: var(--ground);
+  color: var(--text);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
+}
+
+/* Set once, so a heading rendered from markdown gets the same face. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+}
+
+/*
+ * The layout device the sites are built on: a 1px hairline showing through the
+ * gaps of a grid whose cells paint their own background. Crisper than a border
+ * per cell, and it never doubles up at a shared edge.
+ */
+.rule-grid {
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  gap: 1px;
+}
+
+/* The gradient as a thin rule. Never a panel fill. */
+.spectrum-rule {
+  background: linear-gradient(
+    90deg,
+    var(--stop-1) 0%,
+    var(--stop-2) 35%,
+    var(--stop-3) 68%,
+    var(--stop-4) 100%
+  );
+}
+
+/* A quiet calibration grid behind the hero, with two soft pools of colour. */
+.hero-field {
+  background-image:
+    radial-gradient(60% 70% at 92% 8%, rgb(215 166 255 / 0.12), transparent 70%),
+    radial-gradient(50% 60% at 4% 96%, rgb(184 248 74 / 0.08), transparent 70%),
+    linear-gradient(rgb(38 43 45 / 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(38 43 45 / 0.6) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 100%,
+    48px 48px,
+    48px 48px;
+  background-position:
+    0 0,
+    0 0,
+    -1px -1px,
+    -1px -1px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .hero-field {
+    background-image:
+      radial-gradient(60% 70% at 92% 8%, rgb(215 166 255 / 0.18), transparent 70%),
+      radial-gradient(50% 60% at 4% 96%, rgb(184 248 74 / 0.18), transparent 70%),
+      linear-gradient(rgb(11 13 14 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(11 13 14 / 0.05) 1px, transparent 1px);
+  }
+}
+:root[data-theme="light"] .hero-field {
+  background-image:
+    radial-gradient(60% 70% at 92% 8%, rgb(215 166 255 / 0.18), transparent 70%),
+    radial-gradient(50% 60% at 4% 96%, rgb(184 248 74 / 0.18), transparent 70%),
+    linear-gradient(rgb(11 13 14 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(11 13 14 / 0.05) 1px, transparent 1px);
+}
+
+/*
+ * Entrance reveals.
+ *
+ * The hidden state applies only when JavaScript is running (the pre-paint
+ * script adds `js` to <html>), so a reader without it sees every section.
+ * `Reveal` adds `is-in` when the element scrolls into view.
+ */
+.reveal {
+  transition:
+    opacity 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+:root.js .reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+/* With reduced motion there is no hidden state at all: the content is present. */
+@media (prefers-reduced-motion: reduce) {
+  :root.js .reveal:not(.is-in) {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.panel-hover {
+  transition:
+    border-color 120ms ease-out,
+    background-color 120ms ease-out,
+    color 120ms ease-out;
+}
+
+/*
+ * An interactive cell in a hairline grid. The accent rule is drawn inset, so
+ * the cell does not change size and the hairlines do not shift on hover.
+ */
+.panel-interactive {
+  box-shadow: inset 0 -2px 0 0 transparent;
+  transition:
+    background-color 140ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.panel-interactive:hover,
+.panel-interactive:focus-within {
+  box-shadow: inset 0 -2px 0 0 var(--accent);
+}
+
+/* One pixel, on the press only. */
+.pressable:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pressable:active {
+    transform: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Theme toggle icon swap, driven by the resolved theme. */
+.theme-ic-dark {
+  display: none;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-ic-dark {
+    display: inline-flex;
+  }
+  :root:not([data-theme="light"]) .theme-ic-light {
+    display: none;
+  }
+}
+:root[data-theme="dark"] .theme-ic-dark {
+  display: inline-flex;
+}
+:root[data-theme="dark"] .theme-ic-light {
+  display: none;
+}
+:root[data-theme="light"] .theme-ic-dark {
+  display: none;
+}
+:root[data-theme="light"] .theme-ic-light {
+  display: inline-flex;
+}

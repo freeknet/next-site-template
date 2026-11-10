@@ -1,0 +1,26 @@
+# One grouped pull request a week for minor and patch updates, and Next kept in step with its
+# ESLint config, whose versions must match. New releases wait a few days before they are proposed;
+# security updates are not delayed. Update DEPENDENCIES.md in the same pull request as a major.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 5
+      semver-major-days: 30
+    groups:
+      next:
+        patterns: ["next", "eslint-config-next"]
+      minor-and-patch:
+        update-types: [minor, patch]
+        exclude-patterns: ["next", "eslint-config-next"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

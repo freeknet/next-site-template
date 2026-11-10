@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch or pull request cancels the run still going.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      - name: Lint and types
+        run: npm run lint && npm run typecheck
+      - name: Unit tests
+        run: npm test
+      - name: Build (renders the social cards first, hashes the CSP after)
+        run: npm run build
+
+      - name: No broken internal links
+        run: npm run test:links
+
+      - name: Install Chromium for Playwright
+        run: npx playwright install --with-deps chromium
+      - name: Browser tests (axe in both themes, navigation, metadata, console, CSP)
+        run: npm run test:e2e
+      - name: Lighthouse (accessibility below 0.95 fails)
+        run: npm run test:lighthouse
+
+      - name: Upload reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: reports
+          path: |
+            playwright-report/
+            .lighthouseci/
+          retention-days: 14
+          if-no-files-found: ignore
