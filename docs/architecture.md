@@ -9,12 +9,13 @@ A Next.js 16 App Router site exported to static files (`output: "export"`). Ther
 1. **`prebuild` → `npm run assets`**
    - `scripts/copy-font-licences.mjs`: copies the three OFL licences to `public/fonts/`.
    - `scripts/render-icons.mts` (via `tsx`): renders the app icons from the mark into `public/icons/`.
-   - `scripts/render-cards.mts` (via `tsx`): Metaplate renders one 1200x630 PNG per route into `public/<route>/og-image.png`. Fails on text overflow, a missing glyph or a blank card.
+   - `scripts/render-cards.mts` (via `tsx`): Metaplate renders one 1200x630 PNG per route into `public/<route>/og-image.png`. Fails on a render guard (overflow, crop safe area, overlapping text, a missing glyph, a blank card) or a platform rule (`--target`, 600 KB).
 2. **`next build`**: type-checks, prerenders every route into `out/` (`trailingSlash: true`, so `/guide` becomes `out/guide/index.html`), copies `public/` (including `_headers`) into `out/`.
 3. **`postbuild`**
    - `scripts/flatten-rsc-segments.mjs`: copies nested prefetch files to the dotted names the router requests (vercel/next.js#85374). Currently a no-op with `trailingSlash`, kept as a guard.
    - `scripts/build-sw.mjs`: writes `out/sw.js` from `scripts/sw-template.js` with the list of files to precache, or a self-removing worker when `PWA` is off ([pwa.md](pwa.md)).
    - `scripts/csp-hashes.mjs`: hashes every page's inline `<script>`s and writes a `<meta http-equiv="Content-Security-Policy">` first in each `<head>`.
+   - `scripts/audit-export.mts` (via `tsx`): checks every page names a social card that exists in `out/` and matches its tags ([social-cards.md](social-cards.md)).
 
 `npm run dev` runs `predev` (the same assets step) and then `next dev`. The postbuild steps do not run in dev, so there is no CSP and no service worker there.
 
@@ -23,7 +24,7 @@ A Next.js 16 App Router site exported to static files (`output: "export"`). Ther
 | Script | What it does |
 | --- | --- |
 | `dev` | `predev` (assets), then `next dev` on http://localhost:3000 |
-| `build` | `prebuild` (assets), `next build` into `out/`, then `postbuild` (prefetch fix, service worker, CSP) |
+| `build` | `prebuild` (assets), `next build` into `out/`, then `postbuild` (prefetch fix, service worker, CSP, card audit) |
 | `start` | serves `out/` with `serve`, as a static host would |
 | `assets` | font licences, app icons, social cards into `public/` |
 | `init:site` | rewrites the project identity (`--name`, `--repo`, `--tagline`, `--description`, `--branch`) |

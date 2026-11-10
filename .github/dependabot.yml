@@ -10,6 +10,13 @@ updates:
     cooldown:
       default-days: 5
       semver-major-days: 30
+    ignore:
+      # TypeScript 7 is the native compiler; its package exports no JavaScript API (only
+      # `typescript/unstable/*`), which Next's build and typescript-eslint (inside
+      # eslint-config-next) load. With 7 installed, `npm run lint` fails to start.
+      # Remove this once both support it; docs/dependencies.md tracks the hold.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     groups:
       next:
         patterns: ["next", "eslint-config-next"]

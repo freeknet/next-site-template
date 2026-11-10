@@ -20,7 +20,8 @@ Metaplate adds three things over calling Satori directly:
 | `src/lib/og/plate.tsx` | The plate: `createNodeOg<CardCopy>({...})` from `metaplate/node`, with the card's layout as a Satori component. |
 | `src/lib/og/cards.render.tsx` | The render module: one job, the plate rendered once per route. `metaplate render` and `metaplate preview` both load it. |
 | `src/lib/og/metadata.ts` | `pageMetadata()`: puts `og.metadata(...)`'s images into each page's `openGraph` and `twitter` metadata. |
-| `scripts/render-cards.mts` | Runs `metaplate render` in-process under `tsx` (the plate is JSX). Part of `npm run assets`. |
+| `scripts/render-cards.mts` | Runs `metaplate render` in-process under `tsx` (the plate is JSX), with `--target` for each platform and `--max-file-size 600000`. Part of `npm run assets`. |
+| `scripts/audit-export.mts` | After the build: checks every exported page names a card that exists and matches its tags. Part of `postbuild`. |
 | `scripts/preview-cards.mts` | Runs `metaplate preview`, the live gallery. |
 
 Output: `public/og-image.png` and `public/<route>/og-image.png`, plus `.og-manifest.json` (what was rendered, kept out of `public/`). All git-ignored.
@@ -48,7 +49,7 @@ Each is set to `"error"`, so `npm run assets` (and therefore `npm run dev` and `
 | Guard | Fails when | Usual fix |
 | --- | --- | --- |
 | `missingGlyphs` | a character has no glyph in any loaded font (it would draw as a box or nothing) | add the weight or family to `fonts`; remove the character; emoji need Metaplate's `emoji` option |
-| `overflow` | a text element's box reaches past the canvas edge | shorten the copy, reduce the font size, or fix padding (see constraints) |
+| `overflow` | a text element's box reaches past the canvas edge | If the message says the root is larger than the canvas, add `boxSizing: "border-box"` to it. If it says the text needs more room than its container has, shorten the copy, reduce the font size, or clamp it (`lineClamp`). |
 | `safeArea` | text sits in the strip that X's 2:1 crop or Open Graph's 1.91:1 crop removes (15px top and bottom on 1200x630) | keep text inside the padding |
 | `textOverlap` | two text boxes intersect, typically a long title running into the description | shorten the title or give it a `maxWidth` |
 | `blank` | every pixel is one colour (the text never rendered) | usually a padding/`boxSizing` mistake or a missing font |
@@ -62,8 +63,12 @@ The plate is laid out by Satori, which implements a subset of CSS:
 - **Flexbox only.** Any element with more than one child needs `display: "flex"`. No grid, no floats, no `position: sticky`.
 - **Inline `style` objects only.** No class names, no Tailwind, no CSS custom properties. Colours come from `BRAND` in `src/lib/constants.ts`, which `tests/unit/palette.test.ts` keeps equal to the CSS palette.
 - **`boxSizing: "border-box"` on a padded root.** Satori defaults to `content-box`, so a full-size root with padding grows past the canvas and bottom content falls off it (the `blank` or `overflow` guard catches this).
-- **No `<title>` inside SVG.** Satori prints it as visible text. The card's accessible name is its `alt`.
+- **Silent failures.** A CSS variable, a `fontFamily` that does not exactly match a loaded family's name (`"JetBrains Mono"`, not `"JetBrains"`), or a weight that is not loaded is ignored with no error: the card renders in a fallback face. `npm run cards:preview` is where you see it.
+- **`<img>` stretches** to its `width` and `height` unless it has `objectFit: "cover"` (or `"contain"`).
+- **Leave `<title>` out of inline SVG.** Through `createNextOg` it prints as visible text; this template's `createNodeOg` plate does not, but the card's accessible name is its `alt` either way.
 - **No external images by URL** unless allowed; embed project files with `readImageAsset` from `metaplate/assets` (the component may be `async`).
+
+Metaplate's [plate reference](https://github.com/freeknet/metaplate/blob/main/docs/plate.md) lists every option and member, and its [recipes](https://github.com/freeknet/metaplate/blob/main/docs/recipes.md) cover text beside a photograph, logos, long titles, several fonts and one card per record.
 
 ## Changing the cards
 
@@ -79,7 +84,8 @@ While designing, run `npm run cards:preview` and open the URL it prints (`http:/
 
 | When | Command | What it checks |
 | --- | --- | --- |
-| Every build | `npm run assets` (automatic) | The guards above; each written file's format and size. |
+| Every build | `npm run assets` (automatic) | The guards above; each written file's format and size; and, through `--target`, every platform's documented rules (Open Graph, X, LinkedIn, Facebook, WhatsApp, Slack, Discord) with WhatsApp's 600 KB as the file-size ceiling. A card that breaks one fails the build. |
+| Every build | `scripts/audit-export.mts` (`postbuild`, automatic) | Every exported page names a card that is in `out/`, a route names its own card, and the bytes match the tags (size, type, alt) and every platform's rules. On a production build (an HTTPS `NEXT_PUBLIC_SITE_URL`) the image URLs are checked too; on a localhost build they are not. |
 | Every `npm test` | `tests/unit/cards.test.ts` | Each card renders and meets the documented rules of Open Graph, X, LinkedIn, Facebook, WhatsApp, Slack and Discord (format, dimensions, file size, alt text). |
 | After a build | `npm run cards:verify` (part of `npm run check`) | Every `out/**/og-image.png` is a real, complete 1200x630 PNG under 600 KB with visible content. |
 | Browser tests | `tests/e2e/metadata.spec.ts` | Each page declares its card with width, height and alt, and the card is served as `image/png`. |
@@ -88,7 +94,7 @@ While designing, run `npm run cards:preview` and open the URL it prints (`http:/
 
 ### Upgrading Metaplate, Satori, resvg or a font
 
-Guards say nothing is broken, not that nothing changed: a new Satori can move text by a pixel or two with no code change. Around any such upgrade:
+Metaplate's [upgrading guide](https://github.com/freeknet/metaplate/blob/main/docs/upgrading.md) lists each breaking change and what to do. Guards say nothing is broken, not that nothing changed: a new Satori can move text by a pixel or two with no code change. Around any such upgrade:
 
 ```bash
 npm run build && npm run cards:baseline   # before: record the current cards in .og-baseline/
@@ -102,10 +108,28 @@ Look at the diff images. If the change is acceptable, run `npm run cards:baselin
 
 `cards:verify-live` reports a page as failing while `INDEXABLE` is `false`, because `robots.txt` then disallows the crawlers that obey it (X, Facebook), and a local or staging URL that is not HTTPS fails the `universal` profile. That is the point of running it after launch: it is the check that a real preview will work. Platform debuggers are the final word: Meta's Sharing Debugger, LinkedIn Post Inspector, and pasting the link into Slack or Discord.
 
+## Troubleshooting
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `RenderGuardError` during `npm run assets` | A card broke a guard; the message names it. See [Render guards](#render-guards). |
+| `render failed: ... exceeding the 600000-byte limit` | A card is too large for WhatsApp. Usually a photograph in a PNG: switch the plate to JPEG output. |
+| `audit-export: ... is not in the export` | A page names a card that was not rendered: the route is missing from `EXPORTED_ROUTES`, or its path changed. |
+| `audit-export: ... expected its own card` | A page uses another route's metadata; give it `pageMetadata("<its route>", ...)`. |
+| The card is in the wrong typeface, with no error | `fontFamily` must equal the family name exactly, and the weight must be in `fonts`. |
+| `Cannot load ...cards.render.tsx: Node does not transform JSX` | `metaplate` was run directly (`npx metaplate render ...`). Use the npm scripts, which run it under `tsx`. |
+| A shared link shows the old card | The platform cached the old URL. Changed copy gets a new `?v=`; raise `revision` when only the layout changed. Then re-scrape it in the platform's debugger. |
+| `cards:verify-live` fails on `robots.txt` | The site is still `noindex` (`INDEXABLE = false`). Expected before launch. |
+
 ## Reference
 
 Metaplate's own documentation, in its repository's [`docs/`](https://github.com/freeknet/metaplate/tree/main/docs):
 
+- [static-next-site.md](https://github.com/freeknet/metaplate/blob/main/docs/static-next-site.md): the setup this template uses, step by step, with a troubleshooting table
+- [testing.md](https://github.com/freeknet/metaplate/blob/main/docs/testing.md): what each check catches, including the export audit
+- [recipes.md](https://github.com/freeknet/metaplate/blob/main/docs/recipes.md): photos, logos, long titles, several fonts, brand colours
+- [plate.md](https://github.com/freeknet/metaplate/blob/main/docs/plate.md): every plate option and returned member
+- [upgrading.md](https://github.com/freeknet/metaplate/blob/main/docs/upgrading.md): breaking changes by version, and what to delete
 - [render-cli.md](https://github.com/freeknet/metaplate/blob/main/docs/render-cli.md): `metaplate render`, the manifest, incremental builds
 - [rendering.md](https://github.com/freeknet/metaplate/blob/main/docs/rendering.md): plates, output formats, images and assets, plate constraints, guards
 - [fonts.md](https://github.com/freeknet/metaplate/blob/main/docs/fonts.md): font loaders, other scripts (CJK, Arabic), subsets

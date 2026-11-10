@@ -12,7 +12,7 @@ Last reviewed: 2026-11-10.
 | `react`, `react-dom` | runtime | UI runtime |
 | `react-markdown`, `remark-gfm`, `rehype-slug` | runtime | Render each page's `content.md` |
 | `github-slugger` | runtime | Heading slugs for the table of contents and content items |
-| `metaplate` | runtime | Social cards: render, metadata, guards, verification |
+| `metaplate` | runtime | Social cards: render, metadata, guards, platform checks, export audit |
 | `@fontsource/inter`, `space-grotesk`, `jetbrains-mono` | runtime | Self-hosted font files, for pages and cards |
 | `satori` | build | Lays out the social cards (Metaplate's renderer) |
 | `@resvg/resvg-js` | build | Rasterises the social cards and the app icons |
@@ -54,13 +54,13 @@ Produces the same heading slugs `rehype-slug` does, so the table of contents lin
 
 - **Where:** `src/lib/markdown-toc.ts`, `src/lib/page-content.ts`. `tests/unit/markdown-toc.test.ts` checks the slugs.
 
-### `metaplate` 0.8.2 (MIT)
+### `metaplate` 0.8.3 (MIT)
 
 freeknet's own social-image library. Renders a card per route before the build, builds each page's `og:image` metadata from the same definition, fails a broken card with render guards, and verifies files, baselines and deployed pages. See [social-cards.md](social-cards.md).
 
-- **Where:** `src/lib/og/`, `scripts/render-cards.mts`, `scripts/preview-cards.mts`, `tests/unit/cards.test.ts`, the `cards:*` npm scripts.
+- **Where:** `src/lib/og/`, `scripts/render-cards.mts` (render with `--target`, 0.8.3+), `scripts/audit-export.mts` (`extractPageSocialMetadata`, `verifySocialImage`), `scripts/preview-cards.mts`, `tests/unit/cards.test.ts`, the `cards:*` npm scripts.
 - **Peer dependencies:** `satori` and `@resvg/resvg-js` (installed as devDependencies), `next >=16.3.2 <17`, `react`.
-- **Watch:** any upgrade of Metaplate, Satori, resvg or a font can move card pixels with no code change. Run `npm run cards:baseline` before and `npm run cards:compare` after.
+- **Watch:** any upgrade of Metaplate, Satori, resvg or a font can move card pixels with no code change. Run `npm run cards:baseline` before and `npm run cards:compare` after, and read Metaplate's [upgrading guide](https://github.com/freeknet/metaplate/blob/main/docs/upgrading.md) and CHANGELOG.
 
 ### `@fontsource/inter`, `@fontsource/space-grotesk`, `@fontsource/jetbrains-mono` 5.3 (OFL-1.1)
 
@@ -89,7 +89,7 @@ Styling. Tokens are declared in `src/app/globals.css` (`@theme inline`); `postcs
 
 ### `typescript` 6.0.3, held with `~` (Apache-2.0)
 
-Type checking (`npm run typecheck` runs `next typegen` then `tsc --noEmit`). **Held on 6.0**: TypeScript 7 is the native compiler and has no JavaScript API yet, which Next's build and typescript-eslint load. Move to 7 when both support it.
+Type checking (`npm run typecheck` runs `next typegen` then `tsc --noEmit`). **Held on 6.0**: TypeScript 7 is the native compiler, and its package exports no JavaScript API (its main entry returns only the version; the API is under `typescript/unstable/*`). Next's build and typescript-eslint load the classic API, so with 7 installed `npm run lint` fails to start (checked on Dependabot's 7.0.2 pull request, November 2026). `.github/dependabot.yml` ignores TypeScript majors until both support it; remove that rule then.
 
 ### `@types/node` 26, `@types/react` 19, `@types/react-dom` 19 (MIT)
 
@@ -147,4 +147,4 @@ Lighthouse CI (`npm run test:lighthouse`, `lighthouserc.json`): accessibility be
 
 ## Held back
 
-- `typescript` on 6.0 (see above).
+- `typescript` on 6.0 (see above). Dependabot ignores its majors (`.github/dependabot.yml`).

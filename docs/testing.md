@@ -6,7 +6,7 @@
 npm run lint             # ESLint: Next rules, canonical Tailwind classes
 npm run typecheck        # next typegen && tsc (typed routes included)
 npm test                 # Vitest, tests/unit/
-npm run build            # also renders cards and hashes the CSP; fails on a missing content block or card
+npm run build            # renders and checks the cards, hashes the CSP, audits every page's card; fails on a missing content block or card
 npm run cards:verify     # every built card is a complete 1200x630 PNG under 600 KB with visible content
 npm run test:links       # serves out/ on :4173, crawls it, fails on a broken internal link or #anchor
 npm run test:e2e         # Playwright against out/ (build first)
@@ -54,6 +54,7 @@ Playwright can use a Chromium already on the machine: set `PLAYWRIGHT_CHROMIUM_E
 - **`content.md for route "x" has no @y block`**: the page asks for a block the file does not have. Add it, or fix the name.
 - **Type error on `CARDS`**: a route in `EXPORTED_ROUTES` has no card.
 - **Type error on a `<Link href>`**: the route does not exist (typed routes). Check the path, without a trailing slash.
+- **`audit-export: ...`** after the build: a page names a card that is missing, belongs to another route, or does not match its tags. [social-cards.md](social-cards.md#troubleshooting).
 - **`RenderGuardError`** from Metaplate during `npm run assets`: a social card is broken. The message names the guard (`overflow`, `safeArea`, `textOverlap`, `missingGlyphs`, `blank`) and the element; [social-cards.md](social-cards.md#render-guards) has the fix for each.
 - **`--x clears AA` fails**: the new colour is too close to a surface; the message gives the ratio.
 - **`CSP violation: script-src ...`**: a script was injected after build or comes from another origin; see [security.md](security.md).

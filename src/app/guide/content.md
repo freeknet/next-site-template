@@ -73,7 +73,7 @@ Dark is the default. Light applies when the system asks for it, and an explicit 
 
 The preview image a link shows in Slack, Discord, X or LinkedIn is rendered at build time by [Metaplate](https://github.com/freeknet/metaplate). `npm run assets` runs before `dev` and `build` and writes one 1200 by 630 PNG per route into `public/`, from the copy in `src/lib/og/cards.ts` and the layout in `src/lib/og/plate.tsx`. The same plate builds each page's `og:image` tags, so the file and the metadata cannot disagree.
 
-Metaplate's render guards fail the build for a card that would ship broken: text past the edge, text in the strip a platform crops, two lines of text overlapping, a character no font covers, or a blank image. A unit test checks each card against what every major platform documents, including WhatsApp's 600 KB limit.
+Metaplate's render guards fail the build for a card that would ship broken: text past the edge, text in the strip a platform crops, two lines of text overlapping, a character no font covers, or a blank image. The same step checks each card against what every major platform documents, including WhatsApp's 600 KB limit, and after the build an audit reads every exported page and fails it if the card it names is missing, belongs to another page, or does not match its tags.
 
 | Command | Use it to |
 | --- | --- |
