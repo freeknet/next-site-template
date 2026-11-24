@@ -56,22 +56,22 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
-    "@lhci/cli": "^0.16.0",
-    "@playwright/test": "^1.65.0",
+    "@lhci/cli": "^0.16.1",
+    "@playwright/test": "^1.65.1",
     "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/postcss": "^4.3.5",
     "@types/node": "^26.6.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-config-next": "16.4.6",
     "eslint-plugin-better-tailwindcss": "^4.11.0",
     "linkinator": "^8.1.0",
     "satori": "^0.63.2",
-    "serve": "^14.2.7",
+    "serve": "^14.2.8",
     "tailwindcss": "^4.3.5",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.1"
   }
 }
