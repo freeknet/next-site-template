@@ -54,7 +54,7 @@ Produces the same heading slugs `rehype-slug` does, so the table of contents lin
 
 - **Where:** `src/lib/markdown-toc.ts`, `src/lib/page-content.ts`. `tests/unit/markdown-toc.test.ts` checks the slugs.
 
-### `metaplate` 0.8.4 (MIT)
+### `metaplate` 0.9.0 (MIT)
 
 freeknet's own social-image library. Renders a card per route before the build, builds each page's `og:image` metadata from the same definition, fails a broken card with render guards, and verifies files, baselines and deployed pages. See [social-cards.md](social-cards.md).
 
